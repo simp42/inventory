@@ -3,4 +3,6 @@ WORKDIR /src
 
 COPY docker/frontend-serve.sh /serve.sh
 
+RUN cd /src && yarn install
+
 ENTRYPOINT "/serve.sh"

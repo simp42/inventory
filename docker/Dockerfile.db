@@ -1,9 +1,0 @@
-FROM mysql:8.0
-
-# Import schema into container
-#COPY schema.sql /docker-entrypoint-initdb.d/000-schema.sql
-
-RUN echo default_time_zone=Europe/Berlin
-RUN echo Europe/Berlin > /etc/timezone
-
-EXPOSE 3306
