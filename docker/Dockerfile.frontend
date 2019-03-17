@@ -1,0 +1,6 @@
+FROM node
+WORKDIR /src
+
+COPY docker/frontend-serve.sh /serve.sh
+
+ENTRYPOINT "/serve.sh"

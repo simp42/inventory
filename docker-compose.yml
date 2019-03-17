@@ -1,0 +1,49 @@
+version: '3'
+services:
+  web:
+    build:
+      context: ""
+      dockerfile: docker/Dockerfile.web
+    image: "backend-www"
+    hostname: www
+    ports:
+      - "8081:8000"
+    volumes:
+      - ${PWD}/backend:/work
+    environment:
+      TZ: Europe/Berlin
+      DB_HOST: db:3306
+      DB_DATABASE: inventory
+      DB_USER: inventory
+      DB_PASSWORD: inventory
+
+  db:
+    build:
+      context: ""
+      dockerfile: docker/Dockerfile.db
+    image: "backend-db"
+    hostname: db
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "33306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: inventory
+      MYSQL_DATABASE: inventory
+      MYSQL_USER: inventory
+      MYSQL_PASSWORD: inventory
+      TZ: Europe/Berlin
+
+  frontend:
+    build:
+      context: ""
+      dockerfile: docker/Dockerfile.frontend
+    image: "frontend"
+    hostname: frontend
+    volumes:
+      - ${PWD}/frontend:/src
+    ports:
+      - "8080:3000"
+
+volumes:
+  db_data:
