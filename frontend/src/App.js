@@ -1,28 +1,57 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
+import {Route, Switch} from "react-router";
 import './App.css';
+import InventoryHome from "./pages/InventoryHome";
+import Login from "./pages/Login";
+import {BrowserRouter, Link} from "react-router-dom";
+import StitchConnectionContext from "./data/StitchConnectionContext";
+import {RemoteMongoClient, Stitch} from 'mongodb-stitch-browser-sdk';
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+    constructor(props) {
+        super(props);
+
+        // TODO: Config
+        const stitchAppId = 'inventory-lqqln';
+        const cluster = 'inventory-mongodb';
+        const database = 'inventory';
+
+        const client = Stitch.initializeDefaultAppClient(stitchAppId);
+        const db = client.getServiceClient(RemoteMongoClient.factory, cluster).db(database);
+
+        this.state = {
+            stitchClient: client,
+            db: db
+        };
+    }
+
+    render() {
+        return (
+            // <!-- Route component={Notfound} /-->
+            <div className="App">
+                <StitchConnectionContext.Provider value={this.state}>
+                    <BrowserRouter>
+                        <div>
+                            <ul>
+                                <li>
+                                    <Link to="/">Home</Link>
+                                </li>
+                                <li>
+                                    <Link to="/login">Login</Link>
+                                </li>
+                            </ul>
+                        </div>
+                        <Switch>
+                            <Route exact path="/" component={InventoryHome}/>
+                            <Route path="/login" component={Login}/>
+
+                        </Switch>
+                    </BrowserRouter>
+                </StitchConnectionContext.Provider>
+
+            </div>
+        );
+    }
 }
 
 export default App;
