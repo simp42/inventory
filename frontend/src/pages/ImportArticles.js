@@ -71,19 +71,25 @@ class ImportArticles extends React.Component {
         return (
             <div>
                 <h2>Confirm data</h2>
-                <p>Please confirm your data was loaded correctly and confirm that all previous data will be overwritten</p>
+                <p>Please confirm your data was loaded correctly.
+                    <strong>Note: Importing these articles will replace every article in the database</strong>
+                </p>
+
                 <ReactDataGrid
                     columns={gridHeaders}
                     rowGetter={i => this.state.articles[i]}
                     rowsCount={this.state.articles.length}
                 />
 
-                <button onClick={ev => {
+                <br/>
+
+                <button className="button-primary" onClick={ev => {
                     // Import articles
                     ev.preventDefault();
-                    this.setState({working: true});
-                    this.props.articlesRepository.saveAll(this.state.articles);
-                    this.props.history.push('/');
+                    if (window.confirm('This will replace all articles and make old counts inaccessible, are you sure?')) {
+                        this.setState({working: true});
+                        this.props.articlesRepository.replaceAll(this.state.articles).then(() => this.props.history.push('/'));
+                    }
                 }}>Import articles</button>
 
                 <button onClick={ev => {
@@ -100,15 +106,20 @@ class ImportArticles extends React.Component {
     }
 
     render() {
+        let content = null;
+
         if (this.state.working) {
-            return <ProgressSpinner/>;
+            content = <ProgressSpinner/>;
+        } else if (! this.state.articles) {
+            content = this.showUploadForm();
+        } else {
+            content = this.showDataTable();
         }
 
-        if (! this.state.articles) {
-            return this.showUploadForm();
-        }
-
-        return this.showDataTable();
+        return <>
+            <h1>Import articles</h1>
+            {content}
+        </>;
     }
 }
 

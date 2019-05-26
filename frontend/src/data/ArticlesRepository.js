@@ -8,6 +8,10 @@ export default class ArticlesRepository {
         return await this.db.collection('articles').count({});
     }
 
+    async getAllArticlesIterator() {
+        return await this.db.collection('articles').find({}).iterator();
+    }
+
     async replaceAll(articles) {
         const collection = this.db.collection('articles');
 

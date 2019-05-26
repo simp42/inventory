@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "mongodb-stitch-browser-sdk": "^4.3.1",
+    "node-sass": "^4.12.0",
     "react": "^16.8.4",
     "react-csv-reader": "^1.2.2",
     "react-data-grid": "^6.1.0",

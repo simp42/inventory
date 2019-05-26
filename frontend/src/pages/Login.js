@@ -37,7 +37,7 @@ class Login extends React.Component {
 
     async logout() {
         await this.props.user.logout();
-        if (! this.props.user.isLoggedIn()) {
+        if (!this.props.user.isLoggedIn()) {
 
             this.props.history.push('/');
         }
@@ -65,30 +65,42 @@ class Login extends React.Component {
             <form>
                 {error}
 
-                <label htmlFor="email">E-Mail:</label>
-                <input
-                    type="email"
-                    value={this.state.email}
-                    onChange={(ev) => this.setState({email: ev.target.value})}
-                    id="email"
-                    name="email"
-                    placeholder="Your E-Mail"/>
+                <div className="row">
 
-                <label htmlFor="password">Password:</label>
-                <input
-                    type="password"
-                    value={this.state.password}
-                    onChange={(ev) => this.setState({password: ev.target.value})}
-                    id="password"
-                    name="password"
-                    placeholder="Password"
-                />
+                    <div className="twelve columns">
+                        <label htmlFor="email">E-Mail:</label>
+                        <input
+                            type="email"
+                            className="u-full-width"
+                            value={this.state.email}
+                            onChange={(ev) => this.setState({email: ev.target.value})}
+                            id="email"
+                            name="email"
+                            placeholder="Your E-Mail"/>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="twelve columns">
+                        <label htmlFor="password">Password:</label>
+                        <input
+                            type="password"
+                            className="u-full-width"
+                            value={this.state.password}
+                            onChange={(ev) => this.setState({password: ev.target.value})}
+                            id="password"
+                            name="password"
+                            placeholder="Password"
+                        />
 
-                <button id="login" onClick={(ev) => {
-                    ev.preventDefault();
-                    this.login()
-                }}>Login
-                </button>
+                    </div>
+                </div>
+                <div className="row">
+                    <button className="button-primary" id="login" onClick={(ev) => {
+                        ev.preventDefault();
+                        this.login()
+                    }}>Login
+                    </button>
+                </div>
             </form>
         );
     }

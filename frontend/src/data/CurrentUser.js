@@ -44,6 +44,14 @@ export default class CurrentUser {
         }
     }
 
+    id() {
+        if (! this.isLoggedIn()) {
+            return null;
+        }
+
+        return this.stitch.auth.user.id;
+    }
+
     profile() {
         if (! this.isLoggedIn()) {
             return null;
