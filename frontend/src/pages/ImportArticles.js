@@ -88,7 +88,9 @@ class ImportArticles extends React.Component {
                     ev.preventDefault();
                     if (window.confirm('This will replace all articles and make old counts inaccessible, are you sure?')) {
                         this.setState({working: true});
-                        this.props.articlesRepository.replaceAll(this.state.articles).then(() => this.props.history.push('/'));
+                        this.props.articlesRepository.saveSchema(this.state.headers).then(
+                            this.props.articlesRepository.replaceAll(this.state.articles).then(() => this.props.history.push('/'))
+                        );
                     }
                 }}>Import articles</button>
 

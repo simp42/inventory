@@ -1,7 +1,6 @@
 import React from 'react';
 import {withStitchAccess} from "../data/withStitchAccess";
 import {withRouter} from "react-router";
-import styles from '../styles/modules/InventoryOverview.module.sass';
 import ProgressSpinner from "../components/ProgressSpinner";
 
 class InventoryOverview extends React.Component {
@@ -24,6 +23,8 @@ class InventoryOverview extends React.Component {
 
     reloadOverview() {
         if (this.props.user.isLoggedIn()) {
+            this.props.articlesRepository.ensureArticlesSchema();
+
             var myUserId = this.props.user.id();
             this.setState({userId: myUserId});
 
@@ -60,7 +61,7 @@ class InventoryOverview extends React.Component {
         const note = (this.state.totalArticles > 0 &&
             !!this.state.totalStockInInventory >= 0 &&
             this.state.totalStockInInventory < this.state.totalArticles) ?
-            <p className={styles.warning}>The number of articles in your inventory is less than the total number of
+            <p className="warning">The number of articles in your inventory is less than the total number of
                 articles in the database, you may need to start a new inventory session</p> :
             null;
 

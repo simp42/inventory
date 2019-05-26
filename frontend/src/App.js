@@ -6,6 +6,7 @@ import StitchConnectionContext from "./data/StitchConnectionContext";
 import {RemoteMongoClient, Stitch} from 'mongodb-stitch-browser-sdk';
 import ImportArticles from "./pages/ImportArticles";
 import InventoryOverview from "./pages/InventoryOverview";
+import StockSearchAndEdit from "./pages/StockSearchAndEdit";
 
 class App extends Component {
     constructor(props) {
@@ -43,12 +44,16 @@ class App extends Component {
                                     <li>
                                         <Link to="/import">Import</Link>
                                     </li>
+                                    <li>
+                                        <Link to="/stock/search">Search</Link>
+                                    </li>
                                 </ul>
                             </nav>
                             <Switch>
                                 <Route exact path="/" component={InventoryOverview}/>
                                 <Route path="/login" component={Login}/>
                                 <Route path="/import" component={ImportArticles}/>
+                                <Route path="/stock/" component={StockSearchAndEdit}/>
                             </Switch>
                         </div>
                     </BrowserRouter>
