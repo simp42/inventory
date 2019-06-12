@@ -2,8 +2,8 @@ import React from 'react';
 import {withStitchAccess} from "../data/withStitchAccess";
 import {withRouter} from "react-router";
 import ProgressSpinner from "../components/ProgressSpinner";
-import ReactDataGrid from "react-data-grid";
 import ReactTimeout from 'react-timeout';
+import SearchResultsList from "../components/SearchResultsList";
 
 class StockSearch extends React.Component {
     constructor(props) {
@@ -72,17 +72,15 @@ class StockSearch extends React.Component {
         );
     }
 
-    gridColumnClicked(event, selectedIndex) {
-        event.preventDefault();
-
+    resultItemSelected(selectedIndex) {
         if (!this.props.searchResults ||
-            !this.props.searchResults[selectedIndex.rowIdx]
+            !this.props.searchResults[selectedIndex]
         ) {
 
-            console.error('Results does not seem to contain row ' + selectedIndex.rowIdx);
+            console.error('Results does not seem to contain row ' + selectedIndex);
         }
 
-        const stockId = this.props.searchResults[selectedIndex.rowIdx]._id;
+        const stockId = this.props.searchResults[selectedIndex]._id;
 
         this.props.editStock(stockId);
     }
@@ -100,10 +98,10 @@ class StockSearch extends React.Component {
             return <p className="warning">No results</p>;
         }
 
-        return <ReactDataGrid
+        return <SearchResultsList
             columns={this.state.gridColumns}
-            rowGetter={i => this.props.searchResults[i]}
-            rowsCount={this.props.searchResults.length}
+            searchResults={this.props.searchResults}
+            itemSelected={this.resultItemSelected.bind(this)}
         />;
     }
 
@@ -113,24 +111,13 @@ class StockSearch extends React.Component {
 
         let gridColumns = [];
 
-        const eventHandlers = {
-            onClick: this.gridColumnClicked.bind(this)
-        };
-
-        // Construct column definitions fpr the result grid
-        const monospacedFont = (val) => {
-            return <p className="monospaced">{val.value}</p>;
-        };
-
         // Make sure the UPC columns are first
         for (let i = 0; i < schema.length; i++) {
             if (schema[i].type === 'upc') {
                 gridColumns.push({
                     key: schema[i].key,
                     name: schema[i].key,
-                    width: 150,
-                    formatter: monospacedFont,
-                    events: eventHandlers
+                    highlight: true
                 });
             }
         }
@@ -141,8 +128,7 @@ class StockSearch extends React.Component {
                 gridColumns.push({
                     key: schema[i].key,
                     name: schema[i].key,
-                    resizeable: true,
-                    events: eventHandlers
+                    highlight: false
                 });
             }
         }
@@ -150,9 +136,8 @@ class StockSearch extends React.Component {
         // Add a column for the current count
         gridColumns.push({
             key: 'count',
-            name: '#',
-            formatter: monospacedFont,
-            events: eventHandlers
+            name: 'Counted',
+            highlight: true
         });
 
         return gridColumns;
@@ -180,7 +165,11 @@ class StockSearch extends React.Component {
                 <div className="row">
                     <div className="eight columns">
                         <label htmlFor="search">Search</label>
+                        {/* inputMode="numeric" shows the regular keyboard (unlike type="number") but in number entry mode
+                            In my know use cases users prefer to search by EAN, so I'll have the numeric keyboard be preferred
+                         */}
                         <input type="text"
+                               inputMode="numeric"
                                className="u-full-width"
                                maxLength="100"
                                placeholder="Product name / UPC / ..."
@@ -200,9 +189,7 @@ class StockSearch extends React.Component {
                 </div>
             </form>
 
-            <div className="row">
-                {this.searchResults()}
-            </div>
+            {this.searchResults()}
         </>;
     }
 }

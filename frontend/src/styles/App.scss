@@ -1,50 +1,10 @@
 @import "normalize.css";
 @import "skeleton.css";
 @import "colors";
+@import "InventoryNavigation";
 
 body {
   background: $bodybackground;
-}
-
-nav {
-  display: inline-block;
-  width: 100%;
-
-  ul {
-    list-style: none;
-    clear: both;
-
-    li {
-      float: left;
-      padding-top: 0.2em;
-      padding-right: 1em;
-      margin: 3px;
-      display: block;
-      width: 120px;
-      border: 1px solid $textlight;
-      border-radius: 4px;
-      text-transform: uppercase;
-      min-height: 40px;
-      line-height: 40px;
-
-      &:hover {
-        background: $color5;
-        color: $textdark;
-      }
-
-      a {
-        color: $textdark;
-        text-decoration: none;
-        display: inline-block;
-        width: 100%;
-        text-align: center;
-
-        &:hover {
-          color: inherit;
-        }
-      }
-    }
-  }
 }
 
 p.warning {
