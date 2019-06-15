@@ -71,6 +71,37 @@ export default class ArticlesRepository {
     }
 
     /**
+     * Deletes all articles from the collection
+     * @returns {Promise<void>}
+     */
+    async deleteAllArticles() {
+        try {
+            const collection = this.db.collection(this._articles);
+
+            // Drop old articles collection
+            await collection.deleteMany({});
+        } catch (e) {
+            alert(e);
+        }
+    }
+
+    /**
+     * Inserts new articles into the collection
+     * @param articles
+     * @returns {Promise<void>}
+     */
+    async insertArticles(articles) {
+        try {
+            const collection = this.db.collection(this._articles);
+
+            // Insert new articles
+            await collection.insertMany(articles);
+        } catch (e) {
+            alert(e);
+        }
+    }
+
+    /**
      * Replaces all articles in the database witht he given set of new articles
      * @param articles
      * @returns {Promise<void>}

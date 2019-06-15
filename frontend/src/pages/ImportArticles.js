@@ -26,7 +26,7 @@ class ImportArticles extends React.Component {
             let newRow = {};
 
             for (let j = 0; j < currentRow.length; j++) {
-                const columnData = currentRow[j]
+                const columnData = currentRow[j];
                 if (columnData.length > 0) {
                     notEmptyColumn++;
                     newRow[headers[j]] = columnData;
@@ -89,7 +89,9 @@ class ImportArticles extends React.Component {
                     if (window.confirm('This will replace all articles and make old counts inaccessible, are you sure?')) {
                         this.setState({working: true});
                         this.props.articlesRepository.saveSchema(this.state.headers).then(
-                            this.props.articlesRepository.replaceAll(this.state.articles).then(() => this.props.history.push('/'))
+                            this.props.articlesRepository.deleteAllArticles().then(() =>
+                                this.props.articlesRepository.insertArticles(this.state.articles).then(() => this.props.history.push('/'))
+                            )
                         );
                     }
                 }}>Import articles</button>

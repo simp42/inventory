@@ -68,6 +68,17 @@ export default class StockRepository {
         return null;
     }
 
+    async deleteAllStock(userId) {
+        // delete old stock data of current user
+        const stockCollection = this.db.collection(this._stock);
+
+        try {
+            await stockCollection.deleteMany({user_id: userId});
+        } catch (e) {
+            alert(e);
+        }
+    }
+
     /**
      * Imports the articles from the master data iterator given into the users stock taking collection
      * @param userId
@@ -77,15 +88,7 @@ export default class StockRepository {
     async recreateStockFromArticlesIterator(userId, articles) {
         let stock = [];
         let article = null;
-
-        // delete old stock data of current user
         const stockCollection = this.db.collection(this._stock);
-        try {
-            await stockCollection.deleteMany({user_id: userId});
-        } catch (e) {
-            alert(e);
-            return false;
-        }
 
         while ((article = await articles.next()) !== undefined) {
             const newStock = {

@@ -13,7 +13,7 @@ class InventoryOverview extends React.Component {
             totalStockInInventory: null,
             countedArticles: null,
             lastCountedArticles: null,
-            importingStock: false
+            importingStep: 0
         };
     }
 
@@ -43,18 +43,47 @@ class InventoryOverview extends React.Component {
     }
 
     async recreateStockFromArticles() {
-        if (! this.props.user.isLoggedIn) {
+        if (!this.props.user.isLoggedIn) {
             return;
         }
 
-        this.setState({importingStock: true});
-
         const userId = this.props.user.id();
+        this.setState({importingStep: 1});
         const articles = await this.props.articlesRepository.getAllArticlesIterator();
+
+        this.setState({importingStep: 2});
+        await this.props.stockRepository.deleteAllStock(userId);
+
+        this.setState({importingStep: 3});
         let result = await this.props.stockRepository.recreateStockFromArticlesIterator(userId, articles);
 
-        this.setState({importingStock: false});
+        this.setState({importingStep: 0});
         return result;
+    }
+
+    showImportProgress() {
+        if (this.state.importingStep === 0) {
+            return null;
+        }
+
+        let message = '';
+        switch (this.state.importingStep) {
+            case 1:
+                message = 'Loading new article data';
+                break;
+            case 2:
+                message = 'Deleting old stock';
+                break;
+            case 3:
+                message = 'Creating new inventory from article data';
+                break;
+        }
+        return <>
+            <div className="six rows">
+                <p>{message}</p>
+            </div>
+            <ProgressSpinner/>
+        </>;
     }
 
     render() {
@@ -65,22 +94,22 @@ class InventoryOverview extends React.Component {
                 articles in the database, you may need to start a new inventory session</p> :
             null;
 
-        const importStock = (this.state.importingStock) ?
-            <ProgressSpinner/> :
+        const importStock = this.state.importingStep === 0 ?
             <div className="six rows">
-            <button id="restartInventory"
-                    onClick={(ev) => {
-                        ev.preventDefault();
-                        if (window.confirm('This will delete all your counted articles, are you sure?')) {
-                            this.recreateStockFromArticles().then((result) => {
-                                if (result) {
-                                    this.reloadOverview();
-                                }
-                            });
-                        }
-                    }}>Restart inventory</button>
+                <button id="restartInventory"
+                        onClick={(ev) => {
+                            ev.preventDefault();
+                            if (window.confirm('This will delete all your counted articles, are you sure?')) {
+                                this.recreateStockFromArticles().then((result) => {
+                                    if (result) {
+                                        this.reloadOverview();
+                                    }
+                                });
+                            }
+                        }}>Restart inventory
+                </button>
                 <br/><strong>Note: This will delete all your current counted articles!</strong>
-            </div>;
+            </div> : null;
 
         return <>
             <h1>Inventory Overview</h1>
@@ -102,6 +131,7 @@ class InventoryOverview extends React.Component {
                 </tbody>
             </table>
 
+            {this.showImportProgress()}
             {importStock}
         </>;
     }
