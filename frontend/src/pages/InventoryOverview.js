@@ -77,6 +77,8 @@ class InventoryOverview extends React.Component {
             case 3:
                 message = 'Creating new inventory from article data';
                 break;
+            default:
+                message = '';
         }
         return <>
             <div className="six rows">

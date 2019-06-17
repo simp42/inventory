@@ -38,9 +38,11 @@ export default class StockRepository {
         try {
             const filter = {
                 ...this.getOwnerFilter(userId),
-                counted: {$ne: null}
+                'count': {
+                    '$gt': 0,
+                    '$exists': true
+                }
             };
-
             return await this.db.collection(this._stock).count(filter);
         } catch (e) {
             alert(e);
@@ -141,7 +143,10 @@ export default class StockRepository {
             }
         }
 
-        const query = {'$or': orQuery};
+        const query = {
+            user_id: userId,
+            '$or': orQuery
+        };
 
         try {
             return await this.db.collection(this._stock).find(query).toArray();
