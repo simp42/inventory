@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+function get_script_dir () {
+    # Get directory of this script (see https://stackoverflow.com/questions/630372/determine-the-path-of-the-executing-bash-script)
+    local prg=$0
+    if [ ! -e "$prg" ]; then
+      case $prg in
+        (*/*) exit 1;;
+        (*) prg=$(command -v -- "$prg") || exit;;
+      esac
+    fi
+    local dir=$(
+      cd -P -- "$(dirname -- "$prg")" && pwd -P
+    ) || exit
+    prg=$dir/$(basename -- "$prg") || exit
+
+    echo $dir
+}
+
+SCRIPT_DIR="$(get_script_dir)"
+cd "${SCRIPT_DIR}"
+
+PREFIX=${PWD##*/}
+IMAGE_NAME="${PREFIX}_stitch_cli"
+
+if [[ "$(docker images -q "${IMAGE_NAME}" 2> /dev/null)" == "" ]];
+then
+    echo "Image ${IMAGE_NAME} does not exist, attempting to build it"
+
+    docker build -f "${SCRIPT_DIR}/docker/Dockerfile.stitchcli" --rm -q -t "${IMAGE_NAME}:latest" .
+    RESULT=$?
+
+    if [[ $RESULT -gt 0 ]];
+    then
+        echo "Error, could not build docker container for stitch CLI"
+        exit 1
+    fi
+fi
+
+# Proxy for stitch CLI command - run in container
+docker run --rm -it -v "$PWD":/src -v "$PWD/.config:/root/.config" "$IMAGE_NAME" "stitch-cli" "$@"

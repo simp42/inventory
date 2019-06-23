@@ -1,0 +1,22 @@
+{
+    "id": "5ceadce1bf372da4c9895ed1",
+    "database": "inventory",
+    "collection": "articles_schema",
+    "roles": [
+        {
+            "name": "default",
+            "apply_when": {},
+            "write": true,
+            "insert": true,
+            "delete": true,
+            "additional_fields": {}
+        }
+    ],
+    "schema": {
+        "properties": {
+            "_id": {
+                "bsonType": "objectId"
+            }
+        }
+    }
+}

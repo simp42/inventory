@@ -1,0 +1,11 @@
+{
+    "id": "5ce7a0ef4f41eeedf7ece719",
+    "name": "inventory-mongodb",
+    "type": "mongodb-atlas",
+    "config": {
+        "clusterName": "inventory",
+        "readPreference": "primary",
+        "wireProtocolEnabled": false
+    },
+    "version": 1
+}

@@ -1,0 +1,8 @@
+{
+    "app_id": "inventory-lqqln",
+    "config_version": 20180301,
+    "name": "inventory",
+    "location": "IE",
+    "deployment_model": "LOCAL",
+    "security": {}
+}
