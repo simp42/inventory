@@ -8,6 +8,7 @@ import ImportArticles from "./pages/ImportArticles";
 import InventoryOverview from "./pages/InventoryOverview";
 import StockSearchAndEdit from "./pages/StockSearchAndEdit";
 import InventoryNavigation from "./components/InventoryNavigation";
+import ExportAllStock from "./pages/ExportAllStock";
 
 class App extends Component {
     constructor(props) {
@@ -38,8 +39,9 @@ class App extends Component {
                             <Switch>
                                 <Route exact path="/" component={InventoryOverview}/>
                                 <Route path="/login" component={Login}/>
-                                <Route path="/import" component={ImportArticles}/>
                                 <Route path="/stock/" component={StockSearchAndEdit}/>
+                                <Route path="/import" component={ImportArticles}/>
+                                <Route path="/export" component={ExportAllStock}/>
                             </Switch>
                         </div>
                     </BrowserRouter>

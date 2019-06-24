@@ -14,7 +14,6 @@ class InventoryNavigation extends Component {
     getDefaultState() {
         // Check if user is admin for admin specific nav entries
         this.props.user.isAdmin().then(res => {
-            console.log('isAdmin: ', res);
             this.setState({isAdmin: res});
         });
 
@@ -47,6 +46,16 @@ class InventoryNavigation extends Component {
         return null;
     }
 
+    showExport() {
+        if (this.state.isAdmin === true) {
+            return <li>
+                <Link onClick={this.reset.bind(this)} to="/export">Export</Link>
+            </li>;
+        }
+
+        return null;
+    }
+
     render() {
         const currentUser = this.props.user;
 
@@ -60,10 +69,11 @@ class InventoryNavigation extends Component {
                         <li>
                             <Link onClick={this.reset.bind(this)} to="/">Home</Link>
                         </li>
-                        {this.showImport()}
                         <li>
                             <Link onClick={this.reset.bind(this)} to="/stock/search">Search</Link>
                         </li>
+                        {this.showImport()}
+                        {this.showExport()}
                     </ul>
                 </nav>
             );

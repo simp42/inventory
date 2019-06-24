@@ -60,7 +60,7 @@ export default class StockRepository {
         try {
             const filter = this.getOwnerFilter(userId);
 
-            const stock = await this.db.collection(this._stock).find(filter, {limit: 1000});
+            const stock = await this.db.collection(this._stock).find(filter);
             return stock.toArray();
 
         } catch (e) {
@@ -84,10 +84,11 @@ export default class StockRepository {
     /**
      * Imports the articles from the master data iterator given into the users stock taking collection
      * @param userId
+     * @param userEmail
      * @param articles
      * @returns {Promise<boolean>}
      */
-    async recreateStockFromArticlesIterator(userId, articles) {
+    async recreateStockFromArticlesIterator(userId, userEmail, articles) {
         let stock = [];
         let article = null;
         const stockCollection = this.db.collection(this._stock);
@@ -97,6 +98,7 @@ export default class StockRepository {
                 ...article,
                 article_id: article._id,
                 user_id: userId,
+                user_email: userEmail,
                 counted: [],
                 count: 0
             };

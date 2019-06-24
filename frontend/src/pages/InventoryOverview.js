@@ -48,6 +48,8 @@ class InventoryOverview extends React.Component {
         }
 
         const userId = this.props.user.id();
+        const userEmail = this.props.user.profile().email;
+
         this.setState({importingStep: 1});
         const articles = await this.props.articlesRepository.getAllArticlesIterator();
 
@@ -55,7 +57,7 @@ class InventoryOverview extends React.Component {
         await this.props.stockRepository.deleteAllStock(userId);
 
         this.setState({importingStep: 3});
-        let result = await this.props.stockRepository.recreateStockFromArticlesIterator(userId, articles);
+        let result = await this.props.stockRepository.recreateStockFromArticlesIterator(userId, userEmail, articles);
 
         this.setState({importingStep: 0});
         return result;
@@ -127,7 +129,7 @@ class InventoryOverview extends React.Component {
                     <td>{this.state.totalStockInInventory}</td>
                 </tr>
                 <tr>
-                    <td>Counted articles:</td>
+                    <td>Articles in stock with count:</td>
                     <td>{this.state.countedArticles}</td>
                 </tr>
                 </tbody>

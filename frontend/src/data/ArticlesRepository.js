@@ -15,6 +15,14 @@ export default class ArticlesRepository {
         return await this.db.collection(this._articles).count({});
     }
 
+    /**
+     * Loads all articles in the collection
+     * @returns {Promise<void>}
+     */
+    async getAllArticles() {
+        return await this.db.collection(this._articles).find({}).toArray();
+    }
+
     async getAllArticlesIterator() {
         return await this.db.collection(this._articles).find({}).iterator();
     }

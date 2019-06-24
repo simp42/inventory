@@ -19,7 +19,6 @@ export default class CurrentUser {
      */
     async isAdmin() {
         if (window.__inventory_is_admin) {
-            console.log(window.__inventory_is_admin);
             return window.__inventory_is_admin;
         }
 
