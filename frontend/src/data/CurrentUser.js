@@ -13,6 +13,24 @@ export default class CurrentUser {
 
     }
 
+    /**
+     * Determines (via server side function call) if the current user is one of the defined admin users
+     * @returns {Promise<*>}
+     */
+    async isAdmin() {
+        if (window.__inventory_is_admin) {
+            console.log(window.__inventory_is_admin);
+            return window.__inventory_is_admin;
+        }
+
+
+        const isAdminResult = await this.stitch.callFunction("isAdmin", []);
+
+        window.__inventory_is_admin = isAdminResult;
+
+        return isAdminResult;
+    }
+
     async logout() {
         return await this.stitch.auth.logout();
     }

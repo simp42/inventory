@@ -3,9 +3,24 @@
     "collection": "articles_schema",
     "roles": [
         {
+            "name": "admin",
+            "apply_when": {
+                "%%true": {
+                    "%function": {
+                        "name": "isAdmin",
+                        "arguments": []
+                    }
+                }
+            },
+            "write": true,
+            "insert": true,
+            "delete": true,
+            "additional_fields": {}
+        },
+        {
             "name": "default",
             "apply_when": {},
-            "write": true,
+            "read": true,
             "insert": true,
             "delete": true,
             "additional_fields": {}

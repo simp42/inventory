@@ -12,21 +12,39 @@ class InventoryNavigation extends Component {
     }
 
     getDefaultState() {
+        // Check if user is admin for admin specific nav entries
+        this.props.user.isAdmin().then(res => {
+            console.log('isAdmin: ', res);
+            this.setState({isAdmin: res});
+        });
+
         if (window.innerHeight <= 599) {
             return {
                 toggled: false,
-                showNav: false
+                showNav: false,
+                isAdmin: false
             };
         }
 
         return {
             toggled: false,
-            showNav: true
+            showNav: true,
+            isAdmin: false
         }
     }
 
     reset() {
         this.setState(this.getDefaultState());
+    }
+
+    showImport() {
+        if (this.state.isAdmin === true) {
+            return <li>
+                <Link onClick={this.reset.bind(this)} to="/import">Import</Link>
+            </li>;
+        }
+
+        return null;
     }
 
     render() {
@@ -42,9 +60,7 @@ class InventoryNavigation extends Component {
                         <li>
                             <Link onClick={this.reset.bind(this)} to="/">Home</Link>
                         </li>
-                        <li>
-                            <Link onClick={this.reset.bind(this)} to="/import">Import</Link>
-                        </li>
+                        {this.showImport()}
                         <li>
                             <Link onClick={this.reset.bind(this)} to="/stock/search">Search</Link>
                         </li>

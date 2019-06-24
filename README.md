@@ -23,3 +23,13 @@ Set up instructions:
  
 * Once you are successfully logged in you can import the app configuration into Stitch 
  ```./stitch-cli import --path /src/stitch-app --strategy=merge```
+ 
+* You can now create one ore more users in the stitch backend
+
+* To make one of these users an admin of the application, copy his UID (... button in the users list
+ in the Stitch backend) and edit the value for admin users.
+  * Navigate to the Stitch application backend
+  * Go to "Users"
+  * Find the admin user you create and click the "..." button and select "Copy UID"
+  * Navigate to "Values & Secrets" and click "..." for the value "adminUsers" to edit this value
+  * Replace one of the strings in the JSON value with the just copied UID
