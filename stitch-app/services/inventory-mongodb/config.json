@@ -1,5 +1,4 @@
 {
-    "id": "5ce7a0ef4f41eeedf7ece719",
     "name": "inventory-mongodb",
     "type": "mongodb-atlas",
     "config": {
