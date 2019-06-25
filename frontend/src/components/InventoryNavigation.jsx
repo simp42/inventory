@@ -84,18 +84,20 @@ class InventoryNavigation extends Component {
             </>;
         } else {
             return (
-                <svg version="1.1" x="0px" y="0px"
-                     onClick={() => this.setState({showNav: true, toggled: true})}
-                     viewBox="0 0 30 30" style={{
+                <div className="navcontainer">
+                    <svg version="1.1" x="0px" y="0px"
+                         onClick={() => this.setState({showNav: true, toggled: true})}
+                         viewBox="0 0 30 30" style={{
                         width: '30px',
                         height: '30px'
                     }}>
-                    <g>
-                        <rect y="8" width="50" height="3"/>
-                        <rect y="16" width="50" height="3"/>
-                        <rect y="24" width="50" height="3"/>
-                    </g>
-                </svg>
+                        <g>
+                            <rect y="8" width="50" height="3"/>
+                            <rect y="16" width="50" height="3"/>
+                            <rect y="24" width="50" height="3"/>
+                        </g>
+                    </svg>
+                </div>
             );
         }
     }
