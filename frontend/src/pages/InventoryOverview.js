@@ -116,7 +116,7 @@ class InventoryOverview extends React.Component {
             </div> : null;
 
         return <>
-            <h1>Inventory Overview</h1>
+            <h2>Overview</h2>
             {note}
             <table>
                 <tbody>

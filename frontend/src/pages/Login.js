@@ -47,6 +47,8 @@ class Login extends React.Component {
         // {this.props.dataProvider.currentUser().profile.data.email}
         return (
             <form>
+                <h2>Logout</h2>
+
                 <p>You are currently logged in as {this.props.user.profile().email}</p>
                 <button id="logoutButton"
                         onClick={(ev) => {
@@ -60,9 +62,12 @@ class Login extends React.Component {
     }
 
     loginForm() {
-        const error = (this.state.error) ? <p className="error">Login falsch</p> : '';
+        const error = (this.state.error) ? <p className="error">Login error</p> : '';
+
         return (
             <form>
+                <h2>Login</h2>
+
                 {error}
 
                 <div className="row">

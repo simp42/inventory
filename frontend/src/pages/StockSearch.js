@@ -160,7 +160,7 @@ class StockSearch extends React.Component {
 
     render() {
         return <>
-            <h1>Article search</h1>
+            <h2>Article search</h2>
             <form>
                 <div className="row">
                     <div className="eight columns">

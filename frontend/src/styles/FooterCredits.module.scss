@@ -1,0 +1,18 @@
+@import "colors";
+
+.credits {
+  display: block;
+  margin-top: 5em;
+  font-size: 75%;
+  color: $textlight;
+  border-top: 1px solid $textlight;
+
+  ul {
+    list-style: none;
+
+    li {
+      float: left;
+      padding-right: 1em;
+    }
+  }
+}

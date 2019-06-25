@@ -18,48 +18,68 @@
   }
 }
 
-nav {
-  display: inline-block;
+.navcontainer {
+  display: block;
   width: 100%;
+  border-bottom: 1px solid $textlight;
 
-  &.toggled {
-    animation-name: toggle-navigation;
-    animation-duration: 1s;
-    animation-iteration-count: 1;
+  img.icon {
+    display: block;
+    max-width: 50px;
+    max-height: 50px;
+    height: 100%;
+    float: left;
   }
 
-  ul {
-    list-style: none;
-    clear: both;
+  nav {
+    display: inline-block;
+    width: -webkit-calc(100% - 70px);
+    width: -moz-calc(100% - 70px);
+    width: calc(100% - 70px);
 
-    li {
-      float: left;
-      padding-top: 0.2em;
-      padding-right: 1em;
-      margin: 3px;
-      display: block;
-      width: 20%;
-      border: 1px solid #93827f;
-      border-radius: 4px;
-      text-transform: uppercase;
-      min-height: 30px;
-      line-height: 30px;
-      min-width: 100px;
+    &.toggled {
+      animation-name: toggle-navigation;
+      animation-duration: 1s;
+      animation-iteration-count: 1;
+    }
 
-      &:hover {
-        background: $color5;
-        color: $textdark;
-      }
+    ul {
+      list-style: none;
 
-      a {
-        color: $textdark;
-        text-decoration: none;
-        display: inline-block;
-        width: 100%;
-        text-align: center;
+      li {
+        float: left;
+        padding-top: 0.2em;
+        padding-right: 1em;
+        margin: 3px;
+        display: block;
+        width: 20%;
+        border: 1px solid #93827f;
+        border-radius: 4px;
+        text-transform: uppercase;
+        min-height: 30px;
+        line-height: 30px;
+        min-width: 100px;
+
+        @media screen and (max-width: $break-small) {
+          /* Make icons wider, so they appear underneath each other */
+          min-width: 200px;
+        }
 
         &:hover {
-          color: inherit;
+          background: $color5;
+          color: $textdark;
+        }
+
+        a {
+          color: $textdark;
+          text-decoration: none;
+          display: inline-block;
+          width: 100%;
+          text-align: center;
+
+          &:hover {
+            color: inherit;
+          }
         }
       }
     }

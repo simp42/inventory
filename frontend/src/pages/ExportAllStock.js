@@ -224,7 +224,7 @@ class ExportAllStock extends Component {
     render() {
         return <form>
             <div className="row">
-                <h1>Export all stock</h1>
+                <h2>Export all stock</h2>
                 <div className="twelve columns">
                     <p>Show stock of all users by UID</p>
 

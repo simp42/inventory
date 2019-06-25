@@ -60,27 +60,32 @@ class InventoryNavigation extends Component {
         const currentUser = this.props.user;
 
         if (this.state.showNav) {
-            return (
-                <nav className={classNames('main', this.state.toggled ? 'toggled' : '')}>
-                    <ul>
-                        <li>
-                            <Link onClick={this.reset.bind(this)} to="/login">{currentUser.isLoggedIn() ? 'Logout' : 'Login'}</Link>
-                        </li>
-                        <li>
-                            <Link onClick={this.reset.bind(this)} to="/">Home</Link>
-                        </li>
-                        <li>
-                            <Link onClick={this.reset.bind(this)} to="/stock/search">Search</Link>
-                        </li>
-                        {this.showImport()}
-                        {this.showExport()}
-                    </ul>
-                </nav>
-            );
+            return <>
+                <div className="navcontainer">
+                    <img className="icon" src={process.env.PUBLIC_URL + '/android-chrome-192x192.png'} alt="Logo"/>
+
+                    <nav className={classNames('main', this.state.toggled ? 'toggled' : '')}>
+                        <ul>
+                            <li>
+                                <Link onClick={this.reset.bind(this)}
+                                      to="/login">{currentUser.isLoggedIn() ? 'Logout' : 'Login'}</Link>
+                            </li>
+                            <li>
+                                <Link onClick={this.reset.bind(this)} to="/">Home</Link>
+                            </li>
+                            <li>
+                                <Link onClick={this.reset.bind(this)} to="/stock/search">Search</Link>
+                            </li>
+                            {this.showImport()}
+                            {this.showExport()}
+                        </ul>
+                    </nav>
+                </div>
+            </>;
         } else {
             return (
                 <svg version="1.1" x="0px" y="0px"
-                     onClick={(ev) => this.setState({showNav: true, toggled: true})}
+                     onClick={() => this.setState({showNav: true, toggled: true})}
                      viewBox="0 0 30 30" style={{
                         width: '30px',
                         height: '30px'

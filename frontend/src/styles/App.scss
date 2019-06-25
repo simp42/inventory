@@ -7,6 +7,28 @@ body {
   background: $bodybackground;
 }
 
+h1 {
+  display: inline-block;
+  float: left;
+  font-size: 4.5rem;
+  line-height: 5rem;
+  margin-bottom: 1rem;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+h2 {
+  display: inline-block;
+  clear: both;
+  line-height: 5rem;
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  padding-left: 2rem;
+  vertical-align: bottom;
+}
+
 p.warning {
   color: red;
 }

@@ -33,3 +33,15 @@ Set up instructions:
   * Find the admin user you create and click the "..." button and select "Copy UID"
   * Navigate to "Values & Secrets" and click "..." for the value "adminUsers" to edit this value
   * Replace one of the strings in the JSON value with the just copied UID
+  
+* Now that the backend is set up you have to configure the frontend application by creating an env-file
+ in the folder frontend/ overwriting the settings with your custom configuration: 
+ ```cp frontend/.env frontend/.env.production.local```. Now edit the file and replace the app
+ id (shown in Stitch backend), name of your MongoDB cluster and name of your MongoDB database 
+ 
+* If you don't host the application in the root directory of your server, add a homepage-entry
+ in the package.json in the folder frontend/ with the root of your application, e.g. 
+ ```"homepage": "http://example.com/inventory",```
+
+* By calling ```./yarn build``` the application can now be built and the contents of the build-folder
+ copied to your server.

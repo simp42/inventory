@@ -1,0 +1,15 @@
+Options -MultiViews
+
+RewriteEngine On
+RewriteBase /
+
+# Redirect to secure site
+RewriteCond %{HTTPS} !=on
+RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+
+# Rewrite everything to index.html for react router
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule . /index.html [L]

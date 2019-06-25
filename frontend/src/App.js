@@ -9,23 +9,27 @@ import InventoryOverview from "./pages/InventoryOverview";
 import StockSearchAndEdit from "./pages/StockSearchAndEdit";
 import InventoryNavigation from "./components/InventoryNavigation";
 import ExportAllStock from "./pages/ExportAllStock";
+import FooterCredits from "./components/FooterCredits";
 
 class App extends Component {
     constructor(props) {
         super(props);
 
-        // TODO: Config
-        const stitchAppId = 'inventory-lqqln';
-        const cluster = 'inventory-mongodb';
-        const database = 'inventory';
+        const stitchAppId = process.env.REACT_APP_STITCH_APP_ID;
+        if (stitchAppId.length > 1) {
+            const cluster = process.env.REACT_APP_MONGODB_CLUSTER;
+            const database = process.env.REACT_APP_MONGODB_DATABASE;
 
-        const client = Stitch.initializeDefaultAppClient(stitchAppId);
-        const db = client.getServiceClient(RemoteMongoClient.factory, cluster).db(database);
+            const client = Stitch.initializeDefaultAppClient(stitchAppId);
+            const db = client.getServiceClient(RemoteMongoClient.factory, cluster).db(database);
 
-        this.state = {
-            stitchClient: client,
-            db: db
-        };
+            this.state = {
+                stitchClient: client,
+                db: db
+            };
+        } else {
+            alert('Stitch app id is not configured, please add to your .env.prodution file');
+        }
     }
 
     render() {
@@ -36,6 +40,9 @@ class App extends Component {
                     <BrowserRouter>
                         <div className="row">
                             <InventoryNavigation/>
+
+                            <h1>{process.env.REACT_APP_TITLE}</h1>
+
                             <Switch>
                                 <Route exact path="/" component={InventoryOverview}/>
                                 <Route path="/login" component={Login}/>
@@ -46,6 +53,8 @@ class App extends Component {
                         </div>
                     </BrowserRouter>
                 </StitchConnectionContext.Provider>
+
+                <FooterCredits/>
             </div>
         );
     }

@@ -121,7 +121,7 @@ class ImportArticles extends React.Component {
         }
 
         return <>
-            <h1>Import articles</h1>
+            <h2>Import articles</h2>
             {content}
         </>;
     }
