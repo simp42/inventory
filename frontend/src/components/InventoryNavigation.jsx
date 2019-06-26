@@ -74,7 +74,10 @@ class InventoryNavigation extends Component {
                                 <Link onClick={this.reset.bind(this)} to="/">Home</Link>
                             </li>
                             <li>
-                                <Link onClick={this.reset.bind(this)} to="/stock/search">Search</Link>
+                                <Link onClick={this.reset.bind(this)} to="/stock/all">Show all stock</Link>
+                            </li>
+                            <li>
+                                <Link onClick={this.reset.bind(this)} to="/stock/search">Search stock</Link>
                             </li>
                             {this.showImport()}
                             {this.showExport()}

@@ -106,41 +106,7 @@ class StockSearch extends React.Component {
     }
 
     async createGridColumns() {
-        // Load the article schema
-        const schema = await this.props.articlesRepository.ensureArticlesSchema();
-
-        let gridColumns = [];
-
-        // Make sure the UPC columns are first
-        for (let i = 0; i < schema.length; i++) {
-            if (schema[i].type === 'upc') {
-                gridColumns.push({
-                    key: schema[i].key,
-                    name: schema[i].key,
-                    highlight: true
-                });
-            }
-        }
-
-        // Now add non-UPC columns
-        for (let i = 0; i < schema.length; i++) {
-            if (schema[i].type !== 'upc') {
-                gridColumns.push({
-                    key: schema[i].key,
-                    name: schema[i].key,
-                    highlight: false
-                });
-            }
-        }
-
-        // Add a column for the current count
-        gridColumns.push({
-            key: 'count',
-            name: 'Counted',
-            highlight: true
-        });
-
-        return gridColumns;
+        return this.props.createGridColumns();
     }
 
     componentDidMount() {

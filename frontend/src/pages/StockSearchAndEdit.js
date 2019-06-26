@@ -2,6 +2,8 @@ import React from 'react';
 import StockSearch from "./StockSearch";
 import {Route, Switch, withRouter} from "react-router";
 import StockEdit from "./StockEdit";
+import AllStock from "./AllStock";
+import {withStitchAccess} from "../data/withStitchAccess";
 
 class StockSearchAndEdit extends React.Component {
     constructor(props) {
@@ -38,6 +40,44 @@ class StockSearchAndEdit extends React.Component {
         this.props.history.goBack();
     }
 
+    async createResultsColumns() {
+        // Load the article schema
+        const schema = await this.props.articlesRepository.ensureArticlesSchema();
+
+        let gridColumns = [];
+
+        // Make sure the UPC columns are first
+        for (let i = 0; i < schema.length; i++) {
+            if (schema[i].type === 'upc') {
+                gridColumns.push({
+                    key: schema[i].key,
+                    name: schema[i].key,
+                    highlight: true
+                });
+            }
+        }
+
+        // Now add non-UPC columns
+        for (let i = 0; i < schema.length; i++) {
+            if (schema[i].type !== 'upc') {
+                gridColumns.push({
+                    key: schema[i].key,
+                    name: schema[i].key,
+                    highlight: false
+                });
+            }
+        }
+
+        // Add a column for the current count
+        gridColumns.push({
+            key: 'count',
+            name: 'Counted',
+            highlight: true
+        });
+
+        return gridColumns;
+    }
+
     render() {
         return <>
             <Switch>
@@ -46,8 +86,14 @@ class StockSearchAndEdit extends React.Component {
                                  searchResults={this.state.searchResults}
                                  searchDone={this.state.searchDone}
                                  updateSearchResults={this.setSearchResults.bind(this)}
+                                 createGridColumns={this.createResultsColumns.bind(this)}
                                  editStock={this.editStock.bind(this)}
 
+                    />
+                }/>
+                <Route path="/stock/all" render={() =>
+                    <AllStock editStock={this.editStock.bind(this)}
+                              createGridColumns={this.createResultsColumns.bind(this)}
                     />
                 }/>
                 <Route path="/stock/edit/:stockId" render={(el) => {
@@ -61,4 +107,4 @@ class StockSearchAndEdit extends React.Component {
     }
 }
 
-export default withRouter(StockSearchAndEdit);
+export default withStitchAccess(withRouter(StockSearchAndEdit));
