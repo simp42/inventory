@@ -34,12 +34,17 @@
     }
 
     .value {
-      width: 50%;
-      max-width: 50%;
+      width: 60%;
+      max-width: 65%;
       float: left;
       overflow: hidden;
       padding-left: 1em;
       clear: right;
+    }
+
+    .clear {
+      width: 0;
+      clear: both;
     }
 
     .highlight {

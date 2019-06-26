@@ -72,6 +72,7 @@ class SearchResultsList extends Component {
                                     <div className={classNames(styles.value, col.highlight ? styles.highlight : '')}>
                                         {this.ensureNbsp(el[col.key])}
                                     </div>
+                                    <div className={styles.clear}></div>
                                 </React.Fragment>
                             )}
                         </li>
