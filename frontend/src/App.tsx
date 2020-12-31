@@ -1,34 +1,40 @@
-import React, {Component} from 'react';
-import {Route, Switch} from "react-router";
+import React from "react";
 import Login from "./pages/Login";
 import {BrowserRouter} from "react-router-dom";
-import StitchConnectionContext from "./data/StitchConnectionContext";
-import {RemoteMongoClient, Stitch} from 'mongodb-stitch-browser-sdk';
 import ImportArticles from "./pages/ImportArticles";
 import InventoryOverview from "./pages/InventoryOverview";
 import StockSearchAndEdit from "./pages/StockSearchAndEdit";
 import InventoryNavigation from "./components/InventoryNavigation";
 import ExportAllStock from "./pages/ExportAllStock";
 import FooterCredits from "./components/FooterCredits";
+import {MongoConnectionContextProvider} from "./data/MongoConnectionContext";
+import {Route, Switch} from "react-router";
+import * as Realm from "realm-web";
+import "./styles/App.scss";
 
-class App extends Component {
-    constructor(props) {
+interface AppProps {
+}
+
+interface AppState {
+    realmApp: Realm.App
+}
+
+class App extends React.Component<AppProps, AppState> {
+    constructor(props: AppProps) {
         super(props);
 
-        const stitchAppId = process.env.REACT_APP_STITCH_APP_ID;
-        if (stitchAppId.length > 1) {
-            const cluster = process.env.REACT_APP_MONGODB_CLUSTER;
-            const database = process.env.REACT_APP_MONGODB_DATABASE;
-
-            const client = Stitch.initializeDefaultAppClient(stitchAppId);
-            const db = client.getServiceClient(RemoteMongoClient.factory, cluster).db(database);
+        const realmAppId = process.env.REACT_APP_STITCH_APP_ID;
+        if (realmAppId !== undefined && realmAppId.length > 1) {
+            const realmConfig: Realm.AppConfiguration = {
+                id: realmAppId
+            };
+            const app: Realm.App = new Realm.App(realmConfig);
 
             this.state = {
-                stitchClient: client,
-                db: db
+                realmApp: app
             };
         } else {
-            alert('Stitch app id is not configured, please add to your .env.prodution file');
+            alert('Mongo Realm app id is not configured, please add to your .env.production file');
         }
     }
 
@@ -36,7 +42,7 @@ class App extends Component {
         return (
             // <!-- Route component={Notfound} /-->
             <div className="container">
-                <StitchConnectionContext.Provider value={this.state}>
+                <MongoConnectionContextProvider value={{realm: this.state.realmApp}}>
                     <BrowserRouter>
                         <div className="row">
                             <InventoryNavigation/>
@@ -52,7 +58,7 @@ class App extends Component {
                             </Switch>
                         </div>
                     </BrowserRouter>
-                </StitchConnectionContext.Provider>
+                </MongoConnectionContextProvider>
 
                 <FooterCredits/>
             </div>

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {withStitchAccess} from "../data/withStitchAccess";
 import SearchResultsList from "../components/SearchResultsList";
 import ProgressSpinner from "../components/ProgressSpinner";
+import {WithMongoAccess} from "../data/WithMongoAccess";
 
 class AllStock extends Component {
     constructor(props) {
@@ -60,4 +60,4 @@ class AllStock extends Component {
     }
 }
 
-export default withStitchAccess(AllStock);
+export default WithMongoAccess(AllStock);

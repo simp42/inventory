@@ -3,10 +3,26 @@ import StockSearch from "./StockSearch";
 import {Route, Switch, withRouter} from "react-router";
 import StockEdit from "./StockEdit";
 import AllStock from "./AllStock";
-import {withStitchAccess} from "../data/withStitchAccess";
+import {WithMongoAccess, WithMongoAccessProps} from "../data/WithMongoAccess";
+import {RouteComponentProps} from "react-router-dom";
 
-class StockSearchAndEdit extends React.Component {
-    constructor(props) {
+interface SearchResultGridColumn {
+    key: string,
+    name: string,
+    highlight: boolean
+}
+
+interface StockSearchAndEditProps extends WithMongoAccessProps, RouteComponentProps {
+}
+
+interface StockSearchAndEditState {
+    searchTerm: string,
+    searchDone: boolean,
+    searchResults: any[] | null
+}
+
+class StockSearchAndEdit extends React.Component<StockSearchAndEditProps, StockSearchAndEditState> {
+    constructor(props: StockSearchAndEditProps) {
         super(props);
 
         this.state = {
@@ -16,7 +32,7 @@ class StockSearchAndEdit extends React.Component {
         };
     }
 
-    setSearchResults(searchTerm, results) {
+    setSearchResults(searchTerm: string, results: any[]) {
         this.setState({
             searchDone: true,
             searchResults: results,
@@ -24,7 +40,7 @@ class StockSearchAndEdit extends React.Component {
         });
     }
 
-    async editStock(stockId) {
+    async editStock(stockId: string) {
         this.props.history.push('/stock/edit/' + stockId.toString());
     }
 
@@ -40,11 +56,11 @@ class StockSearchAndEdit extends React.Component {
         this.props.history.goBack();
     }
 
-    async createResultsColumns() {
+    async createResultsColumns(): Promise<SearchResultGridColumn[]> {
         // Load the article schema
-        const schema = await this.props.articlesRepository.ensureArticlesSchema();
+        const schema = await this.props.articlesRepository!.ensureArticlesSchema();
 
-        let gridColumns = [];
+        let gridColumns: SearchResultGridColumn[] = [];
 
         // Make sure the UPC columns are first
         for (let i = 0; i < schema.length; i++) {
@@ -83,7 +99,7 @@ class StockSearchAndEdit extends React.Component {
             <Switch>
                 <Route path="/stock/search" render={() =>
                     <StockSearch searchTerm={this.state.searchTerm}
-                                 searchResults={this.state.searchResults}
+                                 searchResults={this.state.searchResults || []}
                                  searchDone={this.state.searchDone}
                                  updateSearchResults={this.setSearchResults.bind(this)}
                                  createGridColumns={this.createResultsColumns.bind(this)}
@@ -107,4 +123,4 @@ class StockSearchAndEdit extends React.Component {
     }
 }
 
-export default withStitchAccess(withRouter(StockSearchAndEdit));
+export default WithMongoAccess(withRouter(StockSearchAndEdit));

@@ -1,43 +1,54 @@
-import React, {Component} from 'react';
-import {Link} from "react-router-dom";
+import React from 'react';
+import {Link, RouteComponentProps} from "react-router-dom";
 import {withRouter} from "react-router";
-import {withStitchAccess} from "../data/withStitchAccess";
 import classNames from 'classnames';
+import {WithMongoAccess, WithMongoAccessProps} from "../data/WithMongoAccess";
 
-class InventoryNavigation extends Component {
-    constructor(props) {
+interface InventoryNavigationProps extends WithMongoAccessProps, RouteComponentProps {
+}
+
+interface InventoryNavigationState {
+    toggled: boolean,
+    showNav: boolean,
+    isAdmin: boolean
+
+}
+
+class InventoryNavigation extends React.Component<InventoryNavigationProps, InventoryNavigationState> {
+    constructor(props:InventoryNavigationProps) {
         super(props);
 
-        this.state = this.getDefaultState();
+        this.state = this.getDefaultState(false);
     }
 
-    getDefaultState() {
-        // Check if user is admin for admin specific nav entries
-        this.props.user.isAdmin().then(res => {
-            this.setState({isAdmin: res});
-        });
-
+    getDefaultState(isAdmin: boolean) {
         if (window.innerHeight <= 599) {
             return {
                 toggled: false,
                 showNav: false,
-                isAdmin: false
+                isAdmin: isAdmin
             };
         }
 
         return {
             toggled: false,
             showNav: true,
-            isAdmin: false
+            isAdmin: isAdmin
         }
     }
 
+    componentDidMount() {
+        this.props.user?.isAdmin().then(res => {
+            this.setState({isAdmin: res});
+        });
+    }
+
     reset() {
-        this.setState(this.getDefaultState());
+        this.setState(this.getDefaultState(this.state.isAdmin));
     }
 
     showImport() {
-        if (this.state.isAdmin === true) {
+        if (this.state.isAdmin) {
             return <li>
                 <Link onClick={this.reset.bind(this)} to="/import">Import</Link>
             </li>;
@@ -47,7 +58,7 @@ class InventoryNavigation extends Component {
     }
 
     showExport() {
-        if (this.state.isAdmin === true) {
+        if (this.state.isAdmin) {
             return <li>
                 <Link onClick={this.reset.bind(this)} to="/export">Export</Link>
             </li>;
@@ -68,7 +79,7 @@ class InventoryNavigation extends Component {
                         <ul>
                             <li>
                                 <Link onClick={this.reset.bind(this)}
-                                      to="/login">{currentUser.isLoggedIn() ? 'Logout' : 'Login'}</Link>
+                                      to="/login">{currentUser?.isLoggedIn() ? 'Logout' : 'Login'}</Link>
                             </li>
                             <li>
                                 <Link onClick={this.reset.bind(this)} to="/">Home</Link>
@@ -106,4 +117,4 @@ class InventoryNavigation extends Component {
     }
 }
 
-export default withRouter(withStitchAccess(InventoryNavigation));
+export default withRouter(WithMongoAccess(InventoryNavigation));

@@ -1,10 +1,23 @@
 import React from 'react';
-import {withStitchAccess} from "../data/withStitchAccess";
 import {withRouter} from "react-router";
 import ProgressSpinner from "../components/ProgressSpinner";
+import {WithMongoAccess, WithMongoAccessProps, WithMongoAccessState} from "../data/WithMongoAccess";
+import {RouteComponentProps} from "react-router-dom";
 
-class InventoryOverview extends React.Component {
-    constructor(props) {
+interface InventoryOverViewProps extends WithMongoAccessProps, RouteComponentProps {
+}
+
+interface InventoryOverviewState extends WithMongoAccessState {
+    userId: string | null,
+    totalArticles: number | null,
+    totalStockInInventory: number | null,
+    countedArticles: number | null,
+    lastCountedArticles: number | null,
+    importingStep: number
+}
+
+class InventoryOverview extends React.Component<InventoryOverViewProps, InventoryOverviewState> {
+    constructor(props: InventoryOverViewProps) {
         super(props);
 
         this.state = {
@@ -17,47 +30,78 @@ class InventoryOverview extends React.Component {
         };
     }
 
+    get totalArticles(): number {
+        if (this.state.totalArticles === null) {
+            return 0;
+        }
+
+        return this.state.totalArticles;
+    }
+
+    get totalCountableArticlesInInventors(): number {
+        if (this.state.totalStockInInventory === null) {
+            return 0;
+        }
+
+        return this.state.totalStockInInventory;
+    }
+
     componentDidMount() {
-        this.reloadOverview();
+        if (! this.props.user?.isLoggedIn()) {
+            this.props.history.push('/login');
+        } else {
+            this.reloadOverview();
+        }
     }
 
     reloadOverview() {
-        if (this.props.user.isLoggedIn()) {
-            this.props.articlesRepository.ensureArticlesSchema();
+        if (this.props.user === null) {
+            return;
+        }
 
-            var myUserId = this.props.user.id();
+        if (this.props.user.isLoggedIn()) {
+            this.props.articlesRepository!.ensureArticlesSchema();
+
+            const myUserId = this.props.user.id();
             this.setState({userId: myUserId});
 
-            this.props.articlesRepository.countArticles(myUserId).then(data =>
+            this.props.articlesRepository!.countArticles().then(data =>
                 this.setState({totalArticles: data})
             );
 
-            this.props.stockRepository.countAllStock(myUserId).then(data =>
+            this.props.stockRepository!.countAllStock(myUserId!).then(data =>
                 this.setState({totalStockInInventory: data})
             );
 
-            this.props.stockRepository.countCountedStock(myUserId).then(data =>
+            this.props.stockRepository!.countCountedStock(myUserId!).then(data =>
                 this.setState({countedArticles: data})
             );
         }
     }
 
     async recreateStockFromArticles() {
-        if (!this.props.user.isLoggedIn) {
+        if (this.props.user === null || !this.props.user.isLoggedIn) {
             return;
         }
 
         const userId = this.props.user.id();
-        const userEmail = this.props.user.profile().email;
+        const userEmail = this.props.user.profile()!.email;
 
         this.setState({importingStep: 1});
-        const articles = await this.props.articlesRepository.getAllArticlesIterator();
+        const articles = await this.props.articlesRepository!.getAllArticles();
 
         this.setState({importingStep: 2});
-        await this.props.stockRepository.deleteAllStock(userId);
+        await this.props.stockRepository!.deleteAllStock(
+            userId!,
+            (removedCount) => this.setState(
+                {
+                    totalStockInInventory: this.state.totalStockInInventory! - removedCount
+                }
+            )
+        );
 
         this.setState({importingStep: 3});
-        let result = await this.props.stockRepository.recreateStockFromArticlesIterator(userId, userEmail, articles);
+        let result = await this.props.stockRepository!.recreateStockFromArticles(userId!, userEmail!, articles);
 
         this.setState({importingStep: 0});
         return result;
@@ -91,14 +135,14 @@ class InventoryOverview extends React.Component {
     }
 
     render() {
-        const note = (this.state.totalArticles > 0 &&
-            !!this.state.totalStockInInventory >= 0 &&
-            this.state.totalStockInInventory < this.state.totalArticles) ?
+        const note = (this.totalArticles > 0 &&
+            !(this.totalCountableArticlesInInventors >= 0) &&
+            this.totalCountableArticlesInInventors < this.totalArticles) ?
             <p className="warning">The number of articles in your inventory is less than the total number of
                 articles in the database, you may need to start a new inventory session</p> :
             null;
 
-        const importStock = this.state.importingStep === 0 ?
+        const importStock = this.state.importingStep === 0 && this.props.user?.isLoggedIn() ?
             <div className="six rows">
                 <button id="restartInventory"
                         onClick={(ev) => {
@@ -141,4 +185,4 @@ class InventoryOverview extends React.Component {
     }
 }
 
-export default withRouter(withStitchAccess(InventoryOverview));
+export default withRouter(WithMongoAccess(InventoryOverview));

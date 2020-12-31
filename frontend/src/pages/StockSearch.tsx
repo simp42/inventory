@@ -1,16 +1,36 @@
-import React from 'react';
-import {withStitchAccess} from "../data/withStitchAccess";
+import * as React from 'react';
 import {withRouter} from "react-router";
 import ProgressSpinner from "../components/ProgressSpinner";
+import {ReactTimeoutProps, Timer} from 'react-timeout';
 import ReactTimeout from 'react-timeout';
 import SearchResultsList from "../components/SearchResultsList";
+import {WithMongoAccess, WithMongoAccessProps} from "../data/WithMongoAccess";
+import {RouteComponentProps} from "react-router-dom";
 
-class StockSearch extends React.Component {
-    constructor(props) {
+interface StockSearchProps extends WithMongoAccessProps, RouteComponentProps, ReactTimeoutProps {
+    searchTerm?: string | null,
+    searchResults: any[],
+    searchDone: boolean,
+    updateSearchResults: (searchTerm: string, results: any[]) => void,
+    createGridColumns: () => Promise<any[]>,
+    editStock: (stockId: string) => void
+}
+
+interface StockSearchState {
+    searchTerm: string,
+    searching: boolean,
+    timeoutId: Timer | null,
+    gridColumns: any[]
+}
+
+class StockSearch extends React.Component<StockSearchProps, StockSearchState> {
+    private readonly searchInput: React.RefObject<HTMLInputElement>;
+
+    constructor(props: StockSearchProps) {
         super(props);
 
         this.state = {
-            searchTerm: this.props.searchTerm,
+            searchTerm: this.props.searchTerm ?? '',
             searching: false,
             timeoutId: null,
             gridColumns: []
@@ -19,19 +39,19 @@ class StockSearch extends React.Component {
         this.searchInput = React.createRef();
     }
 
-    updateSearch(value, timeoutLength) {
-        const timeout = (timeoutLength === undefined) ? 1000 : timeoutLength;
+    updateSearch(value: string, timeoutLength?: number) {
+        const timeout: number = (timeoutLength === undefined) ? 1000 : timeoutLength;
 
-        if (this.state.timeoutId) {
+        if (this.state.timeoutId !== null && this.props.clearTimeout !== undefined) {
             this.props.clearTimeout(this.state.timeoutId);
         }
 
-        let newState = {
+        let newState: any = {
             searchTerm: value.trim(),
             timeoutId: null
         };
 
-        if (value.length > 2) {
+        if (value.length > 2 && this.props.setTimeout !== undefined) {
             newState.timeoutId = this.props.setTimeout(this.doSearch.bind(this), timeout);
         }
 
@@ -45,18 +65,18 @@ class StockSearch extends React.Component {
             return;
         }
 
-        if (this.state.timeoutId) {
+        if (this.state.timeoutId && this.props.clearTimeout !== undefined) {
             this.props.clearTimeout(this.state.timeoutId);
         }
 
         this.setState({searching: true});
 
         // Load the article schema
-        const schema = await this.props.articlesRepository.ensureArticlesSchema();
+        const schema = await this.props.articlesRepository!.ensureArticlesSchema();
 
         // Search for articles with the given search term
-        const results = await this.props.stockRepository.searchStock(
-            this.props.user.id(),
+        const results = await this.props.stockRepository!.searchStock(
+            this.props.user?.id() ?? '',
             schema,
             searchTerm
         );
@@ -72,7 +92,16 @@ class StockSearch extends React.Component {
         );
     }
 
-    resultItemSelected(selectedIndex) {
+    async clearSearch() {
+        await this.setState({
+            searching: false,
+            searchTerm: ''
+        });
+
+        this.searchInput.current?.focus();
+    }
+
+    resultItemSelected(selectedIndex: number) {
         if (!this.props.searchResults ||
             !this.props.searchResults[selectedIndex]
         ) {
@@ -105,7 +134,7 @@ class StockSearch extends React.Component {
         />;
     }
 
-    async createGridColumns() {
+    async createGridColumns(): Promise<any[]> {
         return this.props.createGridColumns();
     }
 
@@ -119,8 +148,8 @@ class StockSearch extends React.Component {
             this.setState({gridColumns: columns});
         });
 
-        if (this.props.searchTerm.length > 0) {
-            this.updateSearch(this.props.searchTerm, 1);
+        if (this.props.searchTerm!.length > 0) {
+            this.updateSearch(this.props.searchTerm!, 1);
         }
     }
 
@@ -137,19 +166,26 @@ class StockSearch extends React.Component {
                         <input type="text"
                                inputMode="numeric"
                                className="u-full-width"
-                               maxLength="100"
+                               maxLength={100}
                                placeholder="Product name / UPC / ..."
                                value={this.state.searchTerm}
                                onChange={(ev) => this.updateSearch(ev.target.value)}
                                ref={this.searchInput}
                         />
                     </div>
-                    <div className="three columns" style={{textAlign: 'right'}}>
+                    <div className="four columns u-pull-left" style={{textAlign: 'right'}}>
                         <label htmlFor="doSearch">&nbsp;</label>
+
                         <button id="doSearch" className="button-primary" onClick={ev => {
                             ev.preventDefault();
                             this.doSearch();
                         }}>Search
+                        </button>
+
+                        <button id="doClearSearch" className="button" onClick={ev => {
+                            ev.preventDefault();
+                            this.clearSearch();
+                        }}>Clear
                         </button>
                     </div>
                 </div>
@@ -160,4 +196,4 @@ class StockSearch extends React.Component {
     }
 }
 
-export default withRouter(withStitchAccess(ReactTimeout(StockSearch)));
+export default withRouter(WithMongoAccess(ReactTimeout(StockSearch)));

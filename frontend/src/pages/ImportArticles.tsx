@@ -1,29 +1,39 @@
 import React from 'react';
-import {withStitchAccess} from "../data/withStitchAccess";
 import CSVReader from "react-csv-reader";
 import ProgressSpinner from "../components/ProgressSpinner";
-import ReactDataGrid from 'react-data-grid';
+import ReactDataGrid from "react-data-grid";
 import {withRouter} from "react-router";
+import {WithMongoAccess, WithMongoAccessProps} from "../data/WithMongoAccess";
+import {RouteComponentProps} from "react-router-dom";
 
-class ImportArticles extends React.Component {
-    constructor(props) {
+interface ImportArticlesProps extends WithMongoAccessProps, RouteComponentProps {
+}
+
+interface ImportArticlesState {
+    working: boolean,
+    articles: any,
+    headers: any[]
+}
+
+class ImportArticles extends React.Component<ImportArticlesProps, ImportArticlesState> {
+    constructor(props: ImportArticlesProps) {
         super(props);
 
         this.state = {
             working: false,
             articles: null,
-            headers: [],
+            headers: []
         }
     }
 
-    handleArticleRows(rows) {
+    handleArticleRows(rows: any[]) {
         const headers = rows[0];
-        let data = [];
+        let data: any[] = [];
         for (let i = 1; i < rows.length; i++) {
             const currentRow = rows[i];
 
-            let notEmptyColumn = 0;
-            let newRow = {};
+            let notEmptyColumn: number = 0;
+            let newRow: any = {};
 
             for (let j = 0; j < currentRow.length; j++) {
                 const columnData = currentRow[j];
@@ -57,7 +67,9 @@ class ImportArticles extends React.Component {
                             this.setState({working: true});
                             this.handleArticleRows(result);
                         }}
-                        onError={(error) => {alert(error)}}
+                        onError={(error) => {
+                            alert(error)
+                        }}
                         inputId="importcsv"
                     />
                 </form>
@@ -65,8 +77,18 @@ class ImportArticles extends React.Component {
         );
     }
 
+    async importArticles() {
+        this.setState({working: true});
+        await this.props.articlesRepository!.saveSchema(this.state.headers);
+        await this.props.articlesRepository!.deleteAllArticles();
+        await this.props.articlesRepository!.insertArticles(this.state.articles);
+        await this.props.history.push('/');
+    }
+
     showDataTable() {
-        const gridHeaders = this.state.headers.map(column => { return { key: column, name: column}});
+        const gridHeaders = this.state.headers.map(column => {
+            return {key: column, name: column}
+        });
 
         return (
             <div>
@@ -77,24 +99,20 @@ class ImportArticles extends React.Component {
 
                 <ReactDataGrid
                     columns={gridHeaders}
-                    rowGetter={i => this.state.articles[i]}
+                    rowGetter={(i: number) => this.state.articles[i]}
                     rowsCount={this.state.articles.length}
                 />
 
                 <br/>
 
-                <button className="button-primary" onClick={ev => {
+                <button className="button-primary" onClick={async ev => {
                     // Import articles
                     ev.preventDefault();
                     if (window.confirm('This will replace all articles and make old counts inaccessible, are you sure?')) {
-                        this.setState({working: true});
-                        this.props.articlesRepository.saveSchema(this.state.headers).then(
-                            this.props.articlesRepository.deleteAllArticles().then(() =>
-                                this.props.articlesRepository.insertArticles(this.state.articles).then(() => this.props.history.push('/'))
-                            )
-                        );
+                        await this.importArticles();
                     }
-                }}>Import articles</button>
+                }}>Import articles
+                </button>
 
                 <button onClick={ev => {
                     // Cancel import
@@ -103,7 +121,8 @@ class ImportArticles extends React.Component {
                         articles: null,
                         headers: []
                     });
-                }}>Cancel</button>
+                }}>Cancel
+                </button>
 
             </div>
         )
@@ -114,7 +133,7 @@ class ImportArticles extends React.Component {
 
         if (this.state.working) {
             content = <ProgressSpinner/>;
-        } else if (! this.state.articles) {
+        } else if (!this.state.articles) {
             content = this.showUploadForm();
         } else {
             content = this.showDataTable();
@@ -127,4 +146,4 @@ class ImportArticles extends React.Component {
     }
 }
 
-export default withRouter(withStitchAccess(ImportArticles));
+export default withRouter(WithMongoAccess(ImportArticles));
