@@ -2,6 +2,7 @@ import React from 'react';
 import ProgressSpinner from "../components/ProgressSpinner";
 import {WithMongoAccess, WithMongoAccessProps} from "../data/WithMongoAccess";
 import {CountableArticle} from "../data/CountableArticle";
+import * as Scroll from "react-scroll";
 
 interface StockEditProps extends WithMongoAccessProps {
     stockId: string,
@@ -18,6 +19,9 @@ interface StockEditState {
 }
 
 class StockEdit extends React.Component<StockEditProps, StockEditState> {
+
+    private currentCount: React.RefObject<HTMLDivElement>;
+
     constructor(props: StockEditProps) {
         super(props);
 
@@ -28,6 +32,8 @@ class StockEdit extends React.Component<StockEditProps, StockEditState> {
             newCount: 0,
             saving: false
         };
+
+        this.currentCount = React.createRef();
     }
 
     componentDidMount() {
@@ -167,6 +173,22 @@ class StockEdit extends React.Component<StockEditProps, StockEditState> {
 
         return <>
             <form>
+                <div className="row">
+                    <div className="twelve columns u-pull-right">
+                        <button id="scrollbottom"
+                                className="button u-full-width"
+                                onClick={(ev) => {
+                                    ev.preventDefault();
+                                    if (this.currentCount.current?.getBoundingClientRect !== undefined) {
+                                        const rect = this.currentCount.current?.getBoundingClientRect();
+                                        Scroll.animateScroll.scrollTo(rect.top);
+                                    }
+
+                                }}
+                        >⬇️
+                        </button>
+                    </div>
+                </div>
 
                 {this.getArticleDescription()}
 
@@ -176,7 +198,7 @@ class StockEdit extends React.Component<StockEditProps, StockEditState> {
                     </div>
                 </div>
 
-                <div className="row">
+                <div className="row" id="currentCount" ref={this.currentCount}>
                     <div className="four columns">
                         <label htmlFor="newCount">Current count:</label>
                     </div>

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import CurrentUser from "./CurrentUser";
 import StockRepository from "./StockRepository";
 import ArticlesRepository from "./ArticlesRepository";

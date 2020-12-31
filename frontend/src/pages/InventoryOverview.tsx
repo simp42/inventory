@@ -47,7 +47,11 @@ class InventoryOverview extends React.Component<InventoryOverViewProps, Inventor
     }
 
     componentDidMount() {
-        this.reloadOverview();
+        if (! this.props.user?.isLoggedIn()) {
+            this.props.history.push('/login');
+        } else {
+            this.reloadOverview();
+        }
     }
 
     reloadOverview() {
