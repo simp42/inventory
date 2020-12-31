@@ -3,7 +3,7 @@ import StockSearch from "./StockSearch";
 import {Route, Switch, withRouter} from "react-router";
 import StockEdit from "./StockEdit";
 import AllStock from "./AllStock";
-import {withStitchAccess} from "../data/withStitchAccess";
+import {WithMongoAccess} from "../data/WithMongoAccess";
 
 class StockSearchAndEdit extends React.Component {
     constructor(props) {
@@ -107,4 +107,4 @@ class StockSearchAndEdit extends React.Component {
     }
 }
 
-export default withStitchAccess(withRouter(StockSearchAndEdit));
+export default WithMongoAccess(withRouter(StockSearchAndEdit));

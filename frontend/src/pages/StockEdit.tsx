@@ -1,9 +1,24 @@
 import React from 'react';
-import {withStitchAccess} from "../data/withStitchAccess";
 import ProgressSpinner from "../components/ProgressSpinner";
+import {WithMongoAccess, WithMongoAccessProps} from "../data/WithMongoAccess";
+import {CountableArticle} from "../data/CountableArticle";
 
-class StockEdit extends React.Component {
-    constructor(props) {
+interface StockEditProps extends WithMongoAccessProps {
+    stockId: string,
+    editDone: () => void,
+    cancelEdit: () => void
+}
+
+interface StockEditState {
+    stockId: string,
+    stock: CountableArticle | null,
+    schema: any,
+    newCount: number,
+    saving: boolean
+}
+
+class StockEdit extends React.Component<StockEditProps, StockEditState> {
+    constructor(props: StockEditProps) {
         super(props);
 
         this.state = {
@@ -20,14 +35,16 @@ class StockEdit extends React.Component {
     }
 
     async loadData() {
-        const stock = await this.props.stockRepository.getStockById(this.props.stockId);
-        const schema = await this.props.articlesRepository.ensureArticlesSchema();
+        const stock = await this.props.stockRepository!.getStockById(this.props.stockId);
+        const schema = await this.props.articlesRepository!.ensureArticlesSchema();
 
-        this.setState({
-            stock: stock,
-            newCount: stock.count,
-            schema: schema
-        });
+        if (stock !== null) {
+            this.setState({
+                stock: stock,
+                newCount: stock.count,
+                schema: schema
+            });
+        }
     }
 
     getChangeDescription() {
@@ -44,6 +61,10 @@ class StockEdit extends React.Component {
     };
 
     getCountChangeDelta() {
+        if (isNaN(this.state.newCount)) {
+            return 0;
+        }
+
         if (!this.state.stock ||
             !this.state.stock.count) {
             return this.state.newCount;
@@ -53,22 +74,25 @@ class StockEdit extends React.Component {
     }
 
     getArticleDescription() {
-        const getStockData = (key) => this.state.stock[key];
+        // @ts-ignore
+        const getStockData = (key: string) => this.state.stock[key];
 
-        const writeUpcRows = (schemarow) => {
+        let i = 1;
+
+        const writeUpcRows = (schemarow: any) => {
             if (schemarow.type !== 'upc') {
                 return null;
             }
 
-            return <h2 key={schemarow.key}>{getStockData(schemarow.key)} - {getStockData('count')}</h2>;
+            return <h2 key={schemarow.key + '_' + (i++)}>{getStockData(schemarow.key)} - {getStockData('count')}</h2>;
         };
 
-        const writeDataRows = (schemarow) => {
+        const writeDataRows = (schemarow: any) => {
             if (schemarow.type === 'upc') {
                 return null;
             }
 
-            return <div key={schemarow.key} className="row">
+            return <div key={schemarow.key + '_' + (i++)} className="row">
                 <div className="four columns">
                     <strong>{schemarow.key}</strong>
                 </div>
@@ -85,7 +109,8 @@ class StockEdit extends React.Component {
     }
 
     history() {
-        if (!this.state.stock.counted ||
+        if (this.state.stock === null ||
+            !this.state.stock.counted ||
             this.state.stock.counted.length === 0) {
             return null;
         }
@@ -115,15 +140,21 @@ class StockEdit extends React.Component {
     save() {
         let stock = this.state.stock;
         this.setState({saving: true});
-        this.doSave(stock, this.getCountChangeDelta());
+        this.doSave(stock!, this.getCountChangeDelta());
     }
 
-    async doSave(stock, delta) {
-        const saved = await this.props.stockRepository.addCountToStock(stock, delta);
-        if (! saved) {
+    async doSave(stock: CountableArticle, delta: number) {
+        const saved = await this.props.stockRepository!.addCountToStock(stock, delta);
+        if (!saved) {
             alert(saved);
         }
         this.props.editDone();
+    }
+
+    async updateCount(event: React.UIEvent, delta: number): Promise<void> {
+        event.preventDefault();
+        const newCount = this.state.newCount + delta;
+        await this.setState({newCount: newCount >= 0 ? newCount : 0});
     }
 
     render() {
@@ -164,20 +195,13 @@ class StockEdit extends React.Component {
                     </div>
                     <div className="four columns">
                         <button className="u-full-width"
-                                onClick={(ev) => {
-                                    ev.preventDefault();
-                                    this.setState({newCount: this.state.newCount + 1});
-                                }}
+                                onClick={(ev) => this.updateCount(ev, 1)}
                                 style={{fontSize: '200%'}}>+
                         </button>
                     </div>
                     <div className="four columns">
                         <button className="u-full-width"
-                                onClick={(ev) => {
-                                    ev.preventDefault();
-                                    const newCount = this.state.newCount - 1;
-                                    this.setState({newCount: newCount >= 0 ? newCount : 0});
-                                }}
+                                onClick={(ev) => this.updateCount(ev, -1)}
                                 style={{fontSize: '200%'}}>-
                         </button>
                     </div>
@@ -211,4 +235,4 @@ class StockEdit extends React.Component {
     }
 }
 
-export default withStitchAccess(StockEdit);
+export default WithMongoAccess(StockEdit);

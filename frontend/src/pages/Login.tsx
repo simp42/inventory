@@ -1,12 +1,19 @@
-import React from 'react';
-import {withStitchAccess} from "../data/withStitchAccess";
-import {withRouter} from "react-router";
+import React from "react";
+import {WithMongoAccess, WithMongoAccessProps} from "../data/WithMongoAccess";
+import {withRouter, RouteComponentProps} from "react-router-dom";
 
-class Login extends React.Component {
-    constructor(props) {
+interface LoginProps extends WithMongoAccessProps, RouteComponentProps {
+}
+
+interface LoginState {
+    email?: string,
+    password?: string,
+    error: boolean
+}
+
+class Login extends React.Component<LoginProps, LoginState> {
+    constructor(props: LoginProps) {
         super(props);
-
-        this.dataProvider = this.props.dataProvider;
 
         this.state = {
             email: '',
@@ -16,11 +23,11 @@ class Login extends React.Component {
     }
 
     async login() {
-        const email = this.state.email.trim();
-        const password = this.state.password.trim();
+        const email: string = this.state.email !== undefined ? this.state.email.trim() : '';
+        const password: string = this.state.password !== undefined ? this.state.password.trim() : '';
 
         if (email.length > 1 && password.length > 1) {
-            const loginSucceeded = await this.props.user.login(email, password);
+            const loginSucceeded = await this.props.user!.login(email, password);
 
             if (!loginSucceeded) {
                 this.setState({
@@ -36,8 +43,8 @@ class Login extends React.Component {
     }
 
     async logout() {
-        await this.props.user.logout();
-        if (!this.props.user.isLoggedIn()) {
+        await this.props.user!.logout();
+        if (!this.props.user!.isLoggedIn()) {
 
             this.props.history.push('/');
         }
@@ -49,7 +56,7 @@ class Login extends React.Component {
             <form>
                 <h2>Logout</h2>
 
-                <p>You are currently logged in as {this.props.user.profile().email}</p>
+                <p>You are currently logged in as {this.props.user!.profile()!.email}</p>
                 <button id="logoutButton"
                         onClick={(ev) => {
                             ev.preventDefault();
@@ -112,8 +119,8 @@ class Login extends React.Component {
 
 
     render() {
-        return this.props.user.isLoggedIn() ? this.logoutForm() : this.loginForm();
+        return this.props.user!.isLoggedIn() ? this.logoutForm() : this.loginForm();
     }
 }
 
-export default withRouter(withStitchAccess(Login));
+export default withRouter(WithMongoAccess(Login));

@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import ProgressSpinner from "../components/ProgressSpinner";
-import {withStitchAccess} from "../data/withStitchAccess";
 import ReactDataGrid from "react-data-grid";
 import * as Excel from "exceljs";
 import {saveAs} from 'file-saver';
+import {WithMongoAccess} from "../data/WithMongoAccess";
 
 class ExportAllStock extends Component {
     constructor(props) {
@@ -403,4 +403,4 @@ class ExportAllStock extends Component {
     }
 }
 
-export default withStitchAccess(ExportAllStock);
+export default WithMongoAccess(ExportAllStock);

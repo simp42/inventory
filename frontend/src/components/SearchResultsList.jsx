@@ -61,11 +61,12 @@ class SearchResultsList extends Component {
             <ul className={styles["search-results-list"]}>
                 {this.props.searchResults.map(el => {
                         itemKey++;
+                        let propKey = 1;
                         return <li data-key={itemKey}
                                    onClick={selected}
                                    key={'searchResults_' + itemKey}>
                             {this.props.columns.map(col =>
-                                <React.Fragment key={'searchResults_' + itemKey + '_' + col.key}>
+                                <React.Fragment key={'searchResults_' + itemKey + '_' + col.key + '_' + (propKey++)}>
                                     <div className={styles.name}>
                                         {col.name}
                                     </div>

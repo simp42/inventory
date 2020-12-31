@@ -1,9 +1,9 @@
 import React from 'react';
-import {withStitchAccess} from "../data/withStitchAccess";
 import {withRouter} from "react-router";
 import ProgressSpinner from "../components/ProgressSpinner";
 import ReactTimeout from 'react-timeout';
 import SearchResultsList from "../components/SearchResultsList";
+import {WithMongoAccess} from "../data/WithMongoAccess";
 
 class StockSearch extends React.Component {
     constructor(props) {
@@ -160,4 +160,4 @@ class StockSearch extends React.Component {
     }
 }
 
-export default withRouter(withStitchAccess(ReactTimeout(StockSearch)));
+export default withRouter(WithMongoAccess(ReactTimeout(StockSearch)));
